@@ -131,7 +131,7 @@ public final class Flight extends Module {
         if (!(event.getPacket() instanceof PlayerMoveC2SPacket packet)) return;
 
         // Improved NoFall handling based on Meteor
-        if (noFall.getValue() && mc.player.fallDistance > 0 && !packet.isOnGround() && !mc.player.isFallFlying()) {
+        if (noFall.getValue() && mc.player.fallDistance != 0 && !packet.isOnGround() && !mc.player.isFallFlying()) {
             ((PlayerMoveC2SPacketAccessor) packet).setOnGround(true);
             return;
         }
