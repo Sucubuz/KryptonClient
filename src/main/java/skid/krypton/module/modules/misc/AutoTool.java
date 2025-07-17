@@ -8,7 +8,7 @@ import net.minecraft.item.*;
 import net.minecraft.registry.tag.BlockTags;
 import skid.krypton.event.EventListener;
 import skid.krypton.event.events.AttackBlockEvent;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
 import skid.krypton.module.setting.BooleanSetting;
@@ -41,7 +41,7 @@ public final class AutoTool extends Module {
     }
 
     @EventListener
-    public void onTick(final TickEvent event) {
+    public void onTick(final StartTickEvent event) {
         if (this.keybindCounter <= 0 && this.isToolSwapping && this.selectedToolSlot != -1) {
             InventoryUtil.swap(this.selectedToolSlot);
             this.isToolSwapping = false;

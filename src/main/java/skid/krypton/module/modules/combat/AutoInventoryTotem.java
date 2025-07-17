@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 import skid.krypton.event.EventListener;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
 import skid.krypton.module.setting.BooleanSetting;
@@ -48,7 +48,7 @@ public final class AutoInventoryTotem extends Module {
     }
 
     @EventListener
-    public void onTick(final TickEvent event) {
+    public void onTick(final StartTickEvent event) {
         boolean isInInventory = this.mc.currentScreen instanceof InventoryScreen || this.mc.currentScreen instanceof FakeInvScreen;
 
         // Handle auto opening inventory

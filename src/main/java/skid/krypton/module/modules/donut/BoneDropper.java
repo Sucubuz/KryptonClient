@@ -7,7 +7,7 @@ import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import skid.krypton.event.EventListener;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
 import skid.krypton.module.setting.ModeSetting;
@@ -39,7 +39,7 @@ public final class BoneDropper extends Module {
     }
 
     @EventListener
-    public void onTick(final TickEvent event) {
+    public void onTick(final StartTickEvent event) {
         if (this.delayCounter > 0) {
             --this.delayCounter;
             return;

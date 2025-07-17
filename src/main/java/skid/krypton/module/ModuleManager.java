@@ -42,6 +42,7 @@ public final class ModuleManager {
         this.a(new NoFall());
         this.a(new FastPlace());
         this.a(new Freecam());
+        this.a(new AntiConsume());
         this.a(new AutoFirework());
         this.a(new ElytraGlide());
         this.a(new AutoTool());

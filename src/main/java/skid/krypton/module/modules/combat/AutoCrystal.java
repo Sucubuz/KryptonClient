@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import skid.krypton.event.EventListener;
 import skid.krypton.event.events.PreItemUseEvent;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
 import skid.krypton.module.setting.BindSetting;
@@ -26,13 +26,15 @@ public final class AutoCrystal extends Module {
     private final BindSetting activateKey = new BindSetting(EncryptedString.of("Activate Key"), 1, false).setDescription(EncryptedString.of("Key that does the crystalling"));
     private final NumberSetting placeDelay = new NumberSetting(EncryptedString.of("Place Delay"), 0.0, 20.0, 0.0, 1.0);
     private final NumberSetting breakDelay = new NumberSetting(EncryptedString.of("Break Delay"), 0.0, 20.0, 0.0, 1.0);
+    private final NumberSetting crystalSpeed = new NumberSetting(EncryptedString.of("Crystal Speed"), 1.0, 5.0, 1.0, 0.1);
+
     private int placeDelayCounter;
     private int breakDelayCounter;
     public boolean isActive;
 
     public AutoCrystal() {
         super(EncryptedString.of("Auto Crystal"), EncryptedString.of("Automatically crystals fast for you"), -1, Category.COMBAT);
-        this.addSettings(this.activateKey, this.placeDelay, this.breakDelay);
+        this.addSettings(this.activateKey, this.placeDelay, this.breakDelay, this.crystalSpeed);
     }
 
     @Override
@@ -48,7 +50,7 @@ public final class AutoCrystal extends Module {
     }
 
     @EventListener
-    public void onTick(final TickEvent tickEvent) {
+    public void onTick(final StartTickEvent startTickEvent) {
         if (this.mc.currentScreen != null) {
             return;
         }
@@ -102,7 +104,7 @@ public final class AutoCrystal extends Module {
         final BlockPos blockPos = blockHitResult.getBlockPos();
         if ((BlockUtil.isBlockAtPosition(blockPos, Blocks.OBSIDIAN) || BlockUtil.isBlockAtPosition(blockPos, Blocks.BEDROCK)) && this.isValidCrystalPlacement(blockPos)) {
             BlockUtil.interactWithBlock(blockHitResult, true);
-            this.placeDelayCounter = this.placeDelay.getIntValue();
+            this.placeDelayCounter = (int) (this.placeDelay.getValue() / this.crystalSpeed.getValue());
         }
     }
 
@@ -116,7 +118,7 @@ public final class AutoCrystal extends Module {
         }
         this.mc.interactionManager.attackEntity(this.mc.player, entity);
         this.mc.player.swingHand(Hand.MAIN_HAND);
-        this.breakDelayCounter = this.breakDelay.getIntValue();
+        this.breakDelayCounter = (int) (this.breakDelay.getValue() / this.crystalSpeed.getValue());
     }
 
     @EventListener

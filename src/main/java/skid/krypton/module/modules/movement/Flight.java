@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import skid.krypton.event.EventListener;
 import skid.krypton.event.events.PacketSendEvent;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.mixin.PlayerMoveC2SPacketAccessor;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
@@ -55,7 +55,7 @@ public final class Flight extends Module {
     }
 
     @EventListener
-    public void onTick(TickEvent event) {
+    public void onTick(StartTickEvent event) {
         // Anti-kick rotation
         float currentYaw = mc.player.getYaw();
         if (mc.player.fallDistance >= 3f && currentYaw == lastYaw && mc.player.getVelocity().length() < 0.003d) {

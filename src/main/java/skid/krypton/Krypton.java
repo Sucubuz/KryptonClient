@@ -62,15 +62,15 @@ public final class Krypton {
     }
 
 
-    public void info(String s) {
+    public static void info(String s) {
         LOG.info(s);
     }
 
-    public void warn(String s) {
+    public static void warn(String s) {
         LOG.warn(s);
     }
 
-    public void error(String s) {
+    public static void error(String s) {
         LOG.error(s);
     }
 }

@@ -7,7 +7,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import skid.krypton.event.EventListener;
 import skid.krypton.event.events.AttackEvent;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
 import skid.krypton.module.setting.BooleanSetting;
@@ -44,7 +44,7 @@ public final class MaceSwap extends Module {
     }
 
     @EventListener
-    public void onTick(final TickEvent event) {
+    public void onTick(final StartTickEvent event) {
         if (this.mc.currentScreen != null) {
             return;
         }

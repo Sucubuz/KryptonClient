@@ -6,7 +6,7 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import skid.krypton.event.EventListener;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.mixin.HandledScreenMixin;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
@@ -33,7 +33,7 @@ public final class HoverTotem extends Module {
     }
 
     @EventListener
-    public void onTick(final TickEvent event) {
+    public void onTick(final StartTickEvent event) {
         if (this.mc.player == null) {
             return;
         }

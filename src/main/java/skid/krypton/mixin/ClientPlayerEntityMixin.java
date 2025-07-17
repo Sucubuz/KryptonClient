@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import skid.krypton.event.events.SendMovementPacketsEvent;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.manager.EventManager;
 
 @Mixin({ClientPlayerEntity.class})
@@ -32,6 +32,6 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity {
 
     @Inject(method = {"tick"}, at = {@At("HEAD")})
     private void onPlayerTick(final CallbackInfo ci) {
-        EventManager.b(new TickEvent());
+        EventManager.b(new StartTickEvent());
     }
 }

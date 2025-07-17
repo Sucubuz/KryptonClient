@@ -18,6 +18,7 @@
     "EntityMixin",
     "EntityRenderDispatcherMixin",
     "EntityRendererMixin",
+    "FireworkRocketEntityMixin",
     "FrustumAccessor",
     "GameRendererMixin",
     "HandledScreenMixin",

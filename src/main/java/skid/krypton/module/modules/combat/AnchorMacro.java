@@ -7,7 +7,7 @@ import net.minecraft.item.ShieldItem;
 import net.minecraft.util.hit.BlockHitResult;
 import org.lwjgl.glfw.GLFW;
 import skid.krypton.event.EventListener;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
 import skid.krypton.module.setting.NumberSetting;
@@ -45,7 +45,7 @@ public final class AnchorMacro extends Module {
     }
 
     @EventListener
-    public void onTick(final TickEvent tickEvent) {
+    public void onTick(final StartTickEvent startTickEvent) {
         if (this.mc.currentScreen != null) {
             return;
         }

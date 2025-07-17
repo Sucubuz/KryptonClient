@@ -3,7 +3,7 @@ package skid.krypton.module.modules.misc;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import skid.krypton.event.EventListener;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.mixin.MinecraftClientAccessor;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
@@ -34,7 +34,7 @@ public final class AutoEat extends Module {
     }
 
     @EventListener
-    public void onTick(final TickEvent tickEvent) {
+    public void onTick(final StartTickEvent startTickEvent) {
         if (this.isEa) {
             if (this.shouldEat()) {
                 if (this.mc.player.getInventory().getStack(this.selectedFoodSlot).get(DataComponentTypes.FOOD) != null) {

@@ -26,7 +26,7 @@ import skid.krypton.module.modules.misc.AutoEat;
 import skid.krypton.module.modules.combat.AutoTotem;
 import skid.krypton.utils.embed.DiscordWebhook;
 import skid.krypton.event.EventListener;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.mixin.MobSpawnerLogicAccessor;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
@@ -89,7 +89,7 @@ public final class TunnelBaseFinder extends Module {
     }
 
     @EventListener
-    public void onTick(final TickEvent event) {
+    public void onTick(final StartTickEvent event) {
         if (this.currentDirection == null) {
             return;
         }

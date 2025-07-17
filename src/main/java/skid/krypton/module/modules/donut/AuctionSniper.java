@@ -14,7 +14,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import skid.krypton.event.EventListener;
-import skid.krypton.event.events.TickEvent;
+import skid.krypton.event.events.StartTickEvent;
 import skid.krypton.module.Category;
 import skid.krypton.module.Module;
 import skid.krypton.module.setting.Setting;
@@ -91,7 +91,7 @@ public final class AuctionSniper
     }
 
     @EventListener
-    public void onTick(TickEvent tickEvent) {
+    public void onTick(StartTickEvent startTickEvent) {
         block10: {
             block9: {
                 if (this.mc.player == null) {

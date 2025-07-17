@@ -92,7 +92,7 @@ public final class Freecam extends Module {
     }
 
     @EventListener
-    private void handleTickEvent(final TickEvent tickEvent) {
+    private void handleTickEvent(final StartTickEvent startTickEvent) {
         if (this.mc.cameraEntity.isInsideWall()) {
             this.mc.getCameraEntity().noClip = true;
         }

@@ -28,9 +28,16 @@ public class MinecraftClientMixin {
     private int itemUseCooldown;
 
     @Inject(method = {"tick"}, at = {@At("HEAD")})
-    private void onTick(final CallbackInfo ci) {
+    private void onStartTick(final CallbackInfo ci) {
         if (this.world != null) {
-            EventManager.b(new TickEvent());
+            EventManager.b(new StartTickEvent());
+        }
+    }
+
+    @Inject(method = {"tick"}, at = {@At("RETURN")})
+    private void onEndTick(final CallbackInfo ci) {
+        if (this.world != null) {
+            EventManager.b(new EndTickEvent());
         }
     }
 
