@@ -1,5 +1,6 @@
 package skid.krypton.module.modules.movement;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
@@ -15,6 +16,8 @@ import skid.krypton.module.setting.BooleanSetting;
 import skid.krypton.module.setting.ModeSetting;
 import skid.krypton.module.setting.NumberSetting;
 import skid.krypton.utils.EncryptedString;
+
+import java.util.Objects;
 
 public final class Flight extends Module {
     private final BooleanSetting verticalSpeedMatch = new BooleanSetting("Speed match", false);
@@ -96,7 +99,7 @@ public final class Flight extends Module {
                     mc.player.setVelocity(velocity.x, -verticalSpeed, velocity.z);
                 }
                 if (noSneak.getValue()) {
-                    mc.player.setOnGround(false);
+                    mc.player.setOnGround(true);
                 }
                 mc.player.move(MovementType.SELF, mc.player.getVelocity());
             }
@@ -114,12 +117,19 @@ public final class Flight extends Module {
 
         // NoFall detection - improved from Meteor
         if (noFall.getValue()) {
-            boolean isFalling = mc.player.getVelocity().y < -0.1 && !mc.player.isOnGround() && mc.player.fallDistance > 0;
-            if (isFalling && !wasFalling) {
+            boolean isFalling = !mc.player.isOnGround() && mc.player.fallDistance > 0;
+            if (isFalling) {
                 wasFalling = true;
-            } else if (!isFalling && wasFalling) {
+            } else if (wasFalling) {
                 wasFalling = false;
             }
+        }
+    }
+
+    @EventListener
+    public void onTick(ClientTickEvents.StartTick event) {
+        if ((noFall.getValue())) {
+            Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(true));
         }
     }
 
