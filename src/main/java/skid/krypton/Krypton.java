@@ -2,6 +2,8 @@ package skid.krypton;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import skid.krypton.gui.ClickGUI;
 import skid.krypton.manager.ConfigManager;
 import skid.krypton.manager.EventManager;
@@ -21,6 +23,7 @@ public final class Krypton {
     public Screen screen;
     public long modified;
     public File jar;
+    public static Logger LOG;
 
     public Krypton() {
         try {
@@ -35,6 +38,7 @@ public final class Krypton {
             this.jar = new File(Krypton.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             this.modified = this.jar.lastModified();
             this.shouldPreventClose = false;
+            this.LOG = LoggerFactory.getLogger(Krypton.class);
             Krypton.mc = MinecraftClient.getInstance();
         } catch (Throwable _t) {
             _t.printStackTrace(System.err);
@@ -57,4 +61,16 @@ public final class Krypton {
         this.jar.setLastModified(this.modified);
     }
 
+
+    public void info(String s) {
+        LOG.info(s);
+    }
+
+    public void warn(String s) {
+        LOG.warn(s);
+    }
+
+    public void error(String s) {
+        LOG.error(s);
+    }
 }

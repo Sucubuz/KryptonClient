@@ -44,6 +44,10 @@ public final class NumberSetting extends Setting {
         return (float) this.value;
     }
 
+    public double getDoubleValue() {
+        return (double) this.value;
+    }
+
     public long getLongValue() {
         return (long) this.value;
     }

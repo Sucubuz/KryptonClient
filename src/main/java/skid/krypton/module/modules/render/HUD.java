@@ -32,7 +32,7 @@ public final class HUD
     private final BooleanSetting showModules = new BooleanSetting("Modules", true).setDescription(EncryptedString.of("Renders module array list"));
     private final BooleanSetting showTime = new BooleanSetting("Time", true).setDescription(EncryptedString.of("Shows current time"));
     private final BooleanSetting showCoordinates = new BooleanSetting("Coordinates", true).setDescription(EncryptedString.of("Shows player coordinates"));
-    private final NumberSetting opacity = new NumberSetting("Opacity", 0.0, 1.0, 0.8f, 0.05f).getValue(EncryptedString.of("Controls the opacity of HUD elements"));
+    private final NumberSetting opacity = new NumberSetting("Opacity", 0.0, 1.0, 0.8, 0.05).getValue(EncryptedString.of("Controls the opacity of HUD elements"));
     private final NumberSetting cornerRadius = new NumberSetting("Corner Radius", 0.0, 10.0, 5.0, 0.5).getValue(EncryptedString.of("Controls the roundness of corners"));
     private final ModeSetting<ModuleListSorting> moduleSortingMode = new ModeSetting("Sort Mode", ModuleListSorting.LENGTH, ModuleListSorting.class).setDescription(EncryptedString.of("How to sort the module list"));
     private final BooleanSetting enableRainbowEffect = new BooleanSetting("Rainbow", false).setDescription(EncryptedString.of("Enables rainbow coloring effect"));

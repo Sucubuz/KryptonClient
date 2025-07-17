@@ -4,7 +4,8 @@
   "package": "skid.krypton.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ClientConnectionMixin"
+    "ClientConnectionMixin",
+    "PlayerMoveC2SPacketAccessor"
   ],
   "client": [
     "CameraMixin",
