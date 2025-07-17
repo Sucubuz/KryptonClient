@@ -38,6 +38,7 @@ public final class ModuleManager {
         this.a(new AnchorMacro());
         this.a(new AutoCrystal());
         this.a(new DoubleAnchor());
+        this.a(new KillauraLegit());
         this.a(new Flight());
         this.a(new NoFall());
         this.a(new FastPlace());

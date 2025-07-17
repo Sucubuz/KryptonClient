@@ -8,6 +8,7 @@ import skid.krypton.gui.ClickGUI;
 import skid.krypton.manager.ConfigManager;
 import skid.krypton.manager.EventManager;
 import skid.krypton.module.ModuleManager;
+import skid.krypton.utils.rotation.RotationFaker;
 
 import java.io.File;
 
@@ -24,6 +25,7 @@ public final class Krypton {
     public long modified;
     public File jar;
     public static Logger LOG;
+    public static RotationFaker rotationFaker;
 
     public Krypton() {
         try {
@@ -38,7 +40,8 @@ public final class Krypton {
             this.jar = new File(Krypton.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             this.modified = this.jar.lastModified();
             this.shouldPreventClose = false;
-            this.LOG = LoggerFactory.getLogger(Krypton.class);
+            LOG = LoggerFactory.getLogger(Krypton.class);
+            rotationFaker = new RotationFaker();
             Krypton.mc = MinecraftClient.getInstance();
         } catch (Throwable _t) {
             _t.printStackTrace(System.err);
@@ -72,5 +75,9 @@ public final class Krypton {
 
     public static void error(String s) {
         LOG.error(s);
+    }
+
+    public RotationFaker getRotationFaker() {
+        return rotationFaker;
     }
 }
