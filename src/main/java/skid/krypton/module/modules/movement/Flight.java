@@ -116,21 +116,14 @@ public final class Flight extends Module {
         }
 
         // NoFall detection - improved from Meteor
-        if (noFall.getValue()) {
+        /*if (noFall.getValue()) {
             boolean isFalling = !mc.player.isOnGround() && mc.player.fallDistance > 0;
             if (isFalling) {
                 wasFalling = true;
             } else if (wasFalling) {
                 wasFalling = false;
             }
-        }
-    }
-
-    @EventListener
-    public void onTick(ClientTickEvents.StartTick event) {
-        if ((noFall.getValue())) {
-            Objects.requireNonNull(mc.getNetworkHandler()).sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(true));
-        }
+        }*/
     }
 
     @EventListener
@@ -138,9 +131,8 @@ public final class Flight extends Module {
         if (!(event.getPacket() instanceof PlayerMoveC2SPacket packet)) return;
 
         // Improved NoFall handling based on Meteor
-        if (noFall.getValue() && wasFalling && !packet.isOnGround() && !mc.player.isFallFlying()) {
+        if (noFall.getValue() && mc.player.fallDistance > 0 && !packet.isOnGround() && !mc.player.isFallFlying()) {
             ((PlayerMoveC2SPacketAccessor) packet).setOnGround(true);
-            wasFalling = false;
             return;
         }
 
