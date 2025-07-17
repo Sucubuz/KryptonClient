@@ -1,6 +1,5 @@
 package skid.krypton.module.modules.movement;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
@@ -17,22 +16,19 @@ import skid.krypton.module.setting.ModeSetting;
 import skid.krypton.module.setting.NumberSetting;
 import skid.krypton.utils.EncryptedString;
 
-import java.util.Objects;
-
 public final class Flight extends Module {
     private final BooleanSetting verticalSpeedMatch = new BooleanSetting("Speed match", false);
     private final BooleanSetting noSneak = new BooleanSetting("No sneak", false);
     private final NumberSetting speed = new NumberSetting("Flight speed", 0.0, 10.0, 0.1, 0.01);
     private final ModeSetting<Mode> mode = new ModeSetting<>("Flight mode", Mode.Abilities, Mode.class);
     private final BooleanSetting noFall = new BooleanSetting("NoFall", true);
-    private final ModeSetting<AntiKickMode> antiKickMode = new ModeSetting<>("Anti-kick mode", AntiKickMode.Packet, AntiKickMode.class);
+    private final ModeSetting<AntiKickMode> antiKickMode = new ModeSetting<>("Anti-kick mode", AntiKickMode.Normal, AntiKickMode.class);
     private final NumberSetting delay = new NumberSetting("Anti-kick delay", 1, 200, 20, 1);
     private final NumberSetting offTime = new NumberSetting("Anti-kick length", 1, 20, 3, 1);
 
     private int delayLeft = delay.getIntValue();
     private int offLeft = offTime.getIntValue();
     private double lastPacketY = Double.MAX_VALUE;
-    private boolean wasFalling = false;
     private boolean flip;
     private float lastYaw;
 
@@ -114,16 +110,6 @@ public final class Flight extends Module {
             }
             default -> throw new IllegalStateException("Unexpected value: " + mode.getValue());
         }
-
-        // NoFall detection - improved from Meteor
-        /*if (noFall.getValue()) {
-            boolean isFalling = !mc.player.isOnGround() && mc.player.fallDistance > 0;
-            if (isFalling) {
-                wasFalling = true;
-            } else if (wasFalling) {
-                wasFalling = false;
-            }
-        }*/
     }
 
     @EventListener
@@ -131,7 +117,7 @@ public final class Flight extends Module {
         if (!(event.getPacket() instanceof PlayerMoveC2SPacket packet)) return;
 
         // Improved NoFall handling based on Meteor
-        if (noFall.getValue() && mc.player.fallDistance != 0 && !packet.isOnGround() && !mc.player.isFallFlying()) {
+        if (noFall.getValue() && !packet.isOnGround() && !mc.player.isFallFlying()) {
             ((PlayerMoveC2SPacketAccessor) packet).setOnGround(true);
             return;
         }

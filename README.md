@@ -9,5 +9,7 @@ I fixed AutoInvTotem, as it was not working.
 Changelog:
 - Fixed AutoInvTotem
 - Added Fullbright
+- Added NoFall
+- Added Flight (including AntiKick from TrouserStreak)
 
 ### THE ORIGINAL SOURCE IS NOT MINE, IT COMES FROM [KRYPTONCLIENT.COM](https://kryptonclient.com).
