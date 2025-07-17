@@ -45,20 +45,33 @@ public final class NumberSetting extends Setting {
     }
 
     public double getDoubleValue() {
-        return (double) this.value;
+        return this.value;
     }
 
     public long getLongValue() {
         return (long) this.value;
     }
 
+    /**
+     * Legacy setter – you can leave this if you have code calling it,
+     * but we recommend migrating to setValue(double) below.
+     */
     public void getValue(final double b) {
-        final double n = 1.0 / this.format;
-        this.value = Math.round(Math.max(this.min, Math.min(this.max, b)) * n) / n;
+        setValue(b);
     }
 
     public NumberSetting getValue(final CharSequence charSequence) {
         super.setDescription(charSequence);
         return this;
+    }
+
+    /**
+     * Set this setting’s value, clamped between [min, max] and rounded
+     * to the configured precision (format).
+     */
+    public void setValue(final double newValue) {
+        double step = 1.0 / this.format;
+        double clamped = Math.max(this.min, Math.min(this.max, newValue));
+        this.value = Math.round(clamped * step) / step;
     }
 }

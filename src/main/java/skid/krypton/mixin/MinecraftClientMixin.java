@@ -86,6 +86,7 @@ public class MinecraftClientMixin {
 
     @Inject(method = {"stop"}, at = {@At("HEAD")})
     private void onClose(final CallbackInfo callbackInfo) {
+        Krypton.configManager.shutdown();
         Krypton.INSTANCE.getConfigManager().shutdown();
     }
 }

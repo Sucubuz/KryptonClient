@@ -13,7 +13,7 @@ import skid.krypton.utils.rotation.RotationFaker;
 import java.io.File;
 
 public final class Krypton {
-    public ConfigManager configManager;
+    public static ConfigManager configManager;
     public ModuleManager MODULE_MANAGER;
     public EventManager EVENT_BUS;
     public static MinecraftClient mc;
@@ -35,7 +35,7 @@ public final class Krypton {
             this.EVENT_BUS = new EventManager();
             this.MODULE_MANAGER = new ModuleManager();
             this.GUI = new ClickGUI();
-            this.configManager = new ConfigManager();
+            configManager = new ConfigManager();
             this.getConfigManager().loadProfile();
             this.jar = new File(Krypton.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             this.modified = this.jar.lastModified();

@@ -2,132 +2,157 @@ package skid.krypton.manager;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import skid.krypton.Krypton;
 import skid.krypton.module.Module;
-import skid.krypton.module.setting.Setting;
 import skid.krypton.module.setting.*;
+import java.io.*;
 
+/**
+ * ConfigManager now:
+ * 1. Reads from disk on loadProfile()
+ * 2. Saves out to disk on shutdown()
+ * 3. Fixes NumberSetting loader to call setValue(...)
+ */
 public final class ConfigManager {
+    private static final File CONFIG_FILE = new File("config/krypton.json");
+    private final Gson gson = new Gson();
     private JsonObject jsonObject;
 
     public void loadProfile() {
         try {
-            if (this.jsonObject == null) {
-                this.jsonObject = new JsonObject();
-                return;
+            // Ensure config directory exists
+            CONFIG_FILE.getParentFile().mkdirs();
+
+            if (jsonObject == null) {
+                if (CONFIG_FILE.exists()) {
+                    // read existing file
+                    try (Reader reader = new FileReader(CONFIG_FILE)) {
+                        jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
+                    }
+                } else {
+                    // no config on disk yet
+                    jsonObject = new JsonObject();
+                }
             }
-            for (final Module next : Krypton.INSTANCE.getModuleManager().c()) {
-                final JsonElement value = this.jsonObject.get(next.getName().toString());
-                if (value != null) {
-                    if (!value.isJsonObject()) {
-                        continue;
-                    }
-                    final JsonObject asJsonObject = value.getAsJsonObject();
-                    final JsonElement value2 = asJsonObject.get("enabled");
-                    if (value2 != null && value2.isJsonPrimitive() && value2.getAsBoolean()) {
-                        next.toggle(true);
-                    }
-                    for (final Object next2 : next.getSettings()) {
-                        final JsonElement value3 = asJsonObject.get(((Setting) next2).getName().toString());
-                        if (value3 == null) {
-                            continue;
-                        }
-                        this.setValueFromJson((Setting) next2, value3, next);
+
+            // apply values to modules
+            for (Module module : Krypton.INSTANCE.getModuleManager().c()) {
+                JsonElement moduleElem = jsonObject.get(module.getName().toString());
+                if (moduleElem == null || !moduleElem.isJsonObject()) continue;
+
+                JsonObject modObj = moduleElem.getAsJsonObject();
+
+                // enabled
+                JsonElement enabledElem = modObj.get("enabled");
+                if (enabledElem != null && enabledElem.isJsonPrimitive() && enabledElem.getAsBoolean()) {
+                    module.toggle(true);
+                }
+
+                // settings
+                for (Setting setting : module.getSettings()) {
+                    JsonElement settingElem = modObj.get(setting.getName().toString());
+                    if (settingElem != null) {
+                        setValueFromJson(setting, settingElem, module);
                     }
                 }
             }
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             System.err.println("Error loading profile: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
-    private void setValueFromJson(final Setting setting, final JsonElement jsonElement, final Module module) {
+    private void setValueFromJson(Setting setting, JsonElement jsonElement, Module module) {
         try {
-            if (setting instanceof final BooleanSetting booleanSetting) {
+            if (setting instanceof BooleanSetting bs) {
                 if (jsonElement.isJsonPrimitive()) {
-                    booleanSetting.setValue(jsonElement.getAsBoolean());
+                    bs.setValue(jsonElement.getAsBoolean());
                 }
-            } else if (setting instanceof final ModeSetting enumSetting) {
+            } else if (setting instanceof ModeSetting<?> ms) {
                 if (jsonElement.isJsonPrimitive()) {
-                    final int asInt = jsonElement.getAsInt();
-                    if (asInt != -1) {
-                        enumSetting.setModeIndex(asInt);
-                    } else {
-                        enumSetting.setModeIndex(enumSetting.getOriginalValue());
+                    int idx = jsonElement.getAsInt();
+                    if (idx != -1) ms.setModeIndex(idx);
+                    else ms.setModeIndex(ms.getOriginalValue());
+                }
+            } else if (setting instanceof NumberSetting ns) {
+                if (jsonElement.isJsonPrimitive()) {
+                    // FIXED: now calling setValue, not getValue
+                    ns.setValue(jsonElement.getAsDouble());
+                }
+            } else if (setting instanceof BindSetting bind) {
+                if (jsonElement.isJsonPrimitive()) {
+                    int key = jsonElement.getAsInt();
+                    bind.setValue(key);
+                    if (bind.isModuleKey()) {
+                        module.setKeybind(key);
                     }
                 }
-            } else if (setting instanceof final NumberSetting numberSetting) {
+            } else if (setting instanceof StringSetting ss) {
                 if (jsonElement.isJsonPrimitive()) {
-                    numberSetting.getValue(jsonElement.getAsDouble());
+                    ss.setValue(jsonElement.getAsString());
                 }
-            } else if (setting instanceof final BindSetting bindSetting) {
-                if (jsonElement.isJsonPrimitive()) {
-                    final int asInt2 = jsonElement.getAsInt();
-                    bindSetting.setValue(asInt2);
-                    if (bindSetting.isModuleKey()) {
-                        module.setKeybind(asInt2);
-                    }
-                }
-            } else if (setting instanceof final StringSetting stringSetting) {
-                if (jsonElement.isJsonPrimitive()) {
-                    stringSetting.setValue(jsonElement.getAsString());
-                }
-            } else if (setting instanceof final MinMaxSetting minMaxSetting) {
+            } else if (setting instanceof MinMaxSetting mm) {
                 if (jsonElement.isJsonObject()) {
-                    final JsonObject asJsonObject = jsonElement.getAsJsonObject();
-                    if (asJsonObject.has("min") && asJsonObject.has("max")) {
-                        final double asDouble = asJsonObject.get("min").getAsDouble();
-                        final double asDouble2 = asJsonObject.get("max").getAsDouble();
-                        minMaxSetting.setCurrentMin(asDouble);
-                        minMaxSetting.setCurrentMax(asDouble2);
+                    JsonObject obj = jsonElement.getAsJsonObject();
+                    if (obj.has("min") && obj.has("max")) {
+                        mm.setCurrentMin(obj.get("min").getAsDouble());
+                        mm.setCurrentMax(obj.get("max").getAsDouble());
                     }
                 }
-            } else if (setting instanceof ItemSetting && jsonElement.isJsonPrimitive()) {
-                ((ItemSetting) setting).setItem(Registries.ITEM.get(Identifier.of(jsonElement.getAsString())));
+            } else if (setting instanceof ItemSetting is && jsonElement.isJsonPrimitive()) {
+                is.setItem(Registries.ITEM.get(Identifier.of(jsonElement.getAsString())));
             }
-        } catch (final Exception ex) {
-        }
+        } catch (Exception ignored) { }
     }
 
     public void shutdown() {
         try {
-            this.jsonObject = new JsonObject();
-            for (final Module module : Krypton.INSTANCE.getModuleManager().c()) {
-                final JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("enabled", module.isEnabled());
+            // rebuild the JSON tree
+            JsonObject out = new JsonObject();
+            for (Module module : Krypton.INSTANCE.getModuleManager().c()) {
+                JsonObject modObj = new JsonObject();
+                modObj.addProperty("enabled", module.isEnabled());
                 for (Setting setting : module.getSettings()) {
-                    this.save(setting, jsonObject, module);
+                    save(setting, modObj, module);
                 }
-                this.jsonObject.add(module.getName().toString(), jsonObject);
+                out.add(module.getName().toString(), modObj);
             }
-        } catch (final Exception _t) {
-            _t.printStackTrace(System.err);
+            // write to disk
+            try (Writer writer = new FileWriter(CONFIG_FILE)) {
+                gson.toJson(out, writer);
+            }
+        } catch (Exception ex) {
+            System.err.println("Error saving config: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
-    private void save(final Setting setting, final JsonObject jsonObject, final Module module) {
+    private void save(Setting setting, JsonObject jsonObject, Module module) {
         try {
-            if (setting instanceof final BooleanSetting booleanSetting) {
-                jsonObject.addProperty(setting.getName().toString(), booleanSetting.getValue());
-            } else if (setting instanceof final ModeSetting<?> enumSetting) {
-                jsonObject.addProperty(setting.getName().toString(), enumSetting.getModeIndex());
-            } else if (setting instanceof final NumberSetting numberSetting) {
-                jsonObject.addProperty(setting.getName().toString(), numberSetting.getValue());
-            } else if (setting instanceof final BindSetting bindSetting) {
-                jsonObject.addProperty(setting.getName().toString(), bindSetting.getValue());
-            } else if (setting instanceof final StringSetting stringSetting) {
-                jsonObject.addProperty(setting.getName().toString(), stringSetting.getValue());
-            } else if (setting instanceof MinMaxSetting) {
-                final JsonObject jsonObject2 = new JsonObject();
-                jsonObject2.addProperty("min", ((MinMaxSetting) setting).getCurrentMin());
-                jsonObject2.addProperty("max", ((MinMaxSetting) setting).getCurrentMax());
-                jsonObject.add(setting.getName().toString(), jsonObject2);
-            } else if (setting instanceof final ItemSetting itemSetting) {
-                jsonObject.addProperty(setting.getName().toString(), Registries.ITEM.getId(itemSetting.getItem()).toString());
+            String name = setting.getName().toString();
+            if (setting instanceof BooleanSetting bs) {
+                jsonObject.addProperty(name, bs.getValue());
+            } else if (setting instanceof ModeSetting<?> ms) {
+                jsonObject.addProperty(name, ms.getModeIndex());
+            } else if (setting instanceof NumberSetting ns) {
+                jsonObject.addProperty(name, ns.getValue());
+            } else if (setting instanceof BindSetting bind) {
+                jsonObject.addProperty(name, bind.getValue());
+            } else if (setting instanceof StringSetting ss) {
+                jsonObject.addProperty(name, ss.getValue());
+            } else if (setting instanceof MinMaxSetting mm) {
+                JsonObject range = new JsonObject();
+                range.addProperty("min", mm.getCurrentMin());
+                range.addProperty("max", mm.getCurrentMax());
+                jsonObject.add(name, range);
+            } else if (setting instanceof ItemSetting is) {
+                jsonObject.addProperty(name, Registries.ITEM.getId(is.getItem()).toString());
             }
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             System.err.println("Error saving setting " + setting.getName() + ": " + ex.getMessage());
         }
     }
