@@ -10,5 +10,6 @@ Changelog:
 - Added Flight (including AntiKick from TrouserStreak)
 - Added a slider for crystal speed in Auto Crystal
 - Added Anti Consume for fireworks
+- Added KillauraLegit
 
 ### THE ORIGINAL SOURCE IS NOT MINE, IT COMES FROM [KRYPTONCLIENT.COM](https://kryptonclient.com).
